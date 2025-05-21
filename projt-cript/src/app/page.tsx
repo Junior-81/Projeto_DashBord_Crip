@@ -5,6 +5,7 @@ import { CryptoCard } from '@/components/CryptoCard';
 import { cryptoService } from '@/services/cryptoService';
 import { useFavorites } from '@/hooks/useFavorites';
 import { Header } from '@/components/Header';
+import { FilterBar } from '@/components/FilterBar';
 
 interface Coin {
   id: string;
@@ -12,6 +13,7 @@ interface Coin {
   symbol: string;
   current_price: number;
   price_change_percentage_24h: number;
+  market_cap: number;
   image: string;
 }
 
@@ -20,6 +22,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [sortBy, setSortBy] = useState('market_cap_desc');
+  const [showFavorites, setShowFavorites] = useState(false);
   const { favorites, toggleFavorite } = useFavorites();
 
   useEffect(() => {
@@ -39,10 +43,36 @@ export default function Home() {
     }
   };
 
-  const filteredCoins = coins.filter(coin =>
-    coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    coin.symbol.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const sortCoins = (coinsToSort: Coin[]) => {
+    return [...coinsToSort].sort((a, b) => {
+      switch (sortBy) {
+        case 'market_cap_desc':
+          return b.market_cap - a.market_cap;
+        case 'market_cap_asc':
+          return a.market_cap - b.market_cap;
+        case 'price_desc':
+          return b.current_price - a.current_price;
+        case 'price_asc':
+          return a.current_price - b.current_price;
+        case 'change_desc':
+          return b.price_change_percentage_24h - a.price_change_percentage_24h;
+        case 'change_asc':
+          return a.price_change_percentage_24h - b.price_change_percentage_24h;
+        default:
+          return 0;
+      }
+    });
+  };
+
+  const filteredCoins = coins
+    .filter(
+      (coin) =>
+        (coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          coin.symbol.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (!showFavorites || favorites.includes(coin.id))
+    );
+
+  const sortedCoins = sortCoins(filteredCoins);
 
   if (loading) {
     return (
@@ -69,19 +99,25 @@ export default function Home() {
   return (
     <>
       <Header />
-      <div className="container mx-auto px-4 pt-20">
-        <div className="mb-8">
+      <div className="container mx-auto px-4 pt-24">
+        <div className="mb-8 flex flex-col md:flex-row md:items-center md:gap-4">
           <input
             type="text"
             placeholder="Buscar criptomoeda..."
-            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full max-w-md px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 md:mb-0"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          <FilterBar
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+            showFavorites={showFavorites}
+            onToggleFavorites={() => setShowFavorites(!showFavorites)}
+          />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {filteredCoins.map((coin) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {sortedCoins.map((coin) => (
             <CryptoCard
               key={coin.id}
               id={coin.id}
@@ -92,6 +128,7 @@ export default function Home() {
               image={coin.image}
               isFavorite={favorites.includes(coin.id)}
               onFavoriteClick={() => toggleFavorite(coin.id)}
+              marketCap={coin.market_cap}
             />
           ))}
         </div>
