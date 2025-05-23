@@ -24,15 +24,16 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('market_cap_desc');
   const [showFavorites, setShowFavorites] = useState(false);
+  const [currency, setCurrency] = useState('BRL');
   const { favorites, toggleFavorite } = useFavorites();
 
   useEffect(() => {
     loadCoins();
-  }, []);
+  }, [currency]); // Recarrega quando a moeda mudar
 
   const loadCoins = async () => {
     try {
-      const data = await cryptoService.getTopCoins(50);
+      const data = await cryptoService.getTopCoins(50, currency);
       setCoins(data);
       setError(null);
     } catch (err) {
@@ -43,8 +44,14 @@ export default function Home() {
     }
   };
 
-  const sortCoins = (coinsToSort: Coin[]) => {
-    return [...coinsToSort].sort((a, b) => {
+  const filteredCoins = coins
+    .filter((coin) => {
+      const matchesSearch =
+        coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        coin.symbol.toLowerCase().includes(searchTerm.toLowerCase());
+      return showFavorites ? favorites.includes(coin.id) && matchesSearch : matchesSearch;
+    })
+    .sort((a, b) => {
       switch (sortBy) {
         case 'market_cap_desc':
           return b.market_cap - a.market_cap;
@@ -54,24 +61,10 @@ export default function Home() {
           return b.current_price - a.current_price;
         case 'price_asc':
           return a.current_price - b.current_price;
-        case 'change_desc':
-          return b.price_change_percentage_24h - a.price_change_percentage_24h;
-        case 'change_asc':
-          return a.price_change_percentage_24h - b.price_change_percentage_24h;
         default:
           return 0;
       }
     });
-  };
-
-  const filteredCoins = coins.filter(
-    (coin) =>
-      (coin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        coin.symbol.toLowerCase().includes(searchTerm.toLowerCase())) &&
-      (!showFavorites || favorites.includes(coin.id))
-  );
-
-  const sortedCoins = sortCoins(filteredCoins);
 
   if (loading) {
     return (
@@ -96,42 +89,35 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <main className="container mx-auto px-4 py-8">
       <Header />
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex flex-col sm:flex-row gap-4">
-          <input
-            type="text"
-            placeholder="Buscar criptomoeda..."
-            className="p-2 rounded border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <FilterBar
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-            showFavorites={showFavorites}
-            onToggleFavorites={() => setShowFavorites(!showFavorites)}
-          />
-        </div>
+      <FilterBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+        showFavorites={showFavorites}
+        onToggleFavorites={() => setShowFavorites(!showFavorites)}
+        currency={currency}
+        onCurrencyChange={setCurrency}
+      />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {sortedCoins.map((coin) => (
-            <CryptoCard
-              key={coin.id}
-              id={coin.id}
-              name={coin.name}
-              symbol={coin.symbol}
-              price={coin.current_price}
-              priceChange24h={coin.price_change_percentage_24h}
-              image={coin.image}
-              isFavorite={favorites.includes(coin.id)}
-              onFavoriteClick={() => toggleFavorite(coin.id)}
-              marketCap={coin.market_cap}
-            />
-          ))}
-        </div>
-      </main>
-    </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filteredCoins.map((coin) => (
+          <CryptoCard
+            key={coin.id}
+            id={coin.id}
+            name={coin.name}
+            symbol={coin.symbol}
+            price={coin.current_price}
+            priceChange24h={coin.price_change_percentage_24h}
+            image={coin.image}
+            isFavorite={favorites.includes(coin.id)}
+            onFavoriteClick={() => toggleFavorite(coin.id)}
+            currency={currency}
+          />
+        ))}
+      </div>
+    </main>
   );
 }

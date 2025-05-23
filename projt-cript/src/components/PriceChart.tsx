@@ -22,18 +22,30 @@ ChartJS.register(
 );
 
 interface PriceChartProps {
-  data: number[];
-  labels: string[];
-  title: string;
+  data: [number, number][];
+  currency: string;
 }
 
-export const PriceChart = ({ data, labels, title }: PriceChartProps) => {
+export const PriceChart = ({ data, currency }: PriceChartProps) => {
+  const formatDate = (timestamp: number) => {
+    return new Date(timestamp).toLocaleDateString();
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(price);
+  };
+
   const chartData = {
-    labels,
+    labels: data.map(([timestamp]) => formatDate(timestamp)),
     datasets: [
       {
         label: 'Preço',
-        data,
+        data: data.map(([, price]) => price),
         borderColor: '#3b82f6',
         backgroundColor: 'rgba(59, 130, 246, 0.1)',
         fill: true,
@@ -48,14 +60,24 @@ export const PriceChart = ({ data, labels, title }: PriceChartProps) => {
       legend: {
         display: false,
       },
-      title: {
-        display: true,
-        text: title,
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            return formatPrice(context.parsed.y);
+          },
+        },
       },
     },
     scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
       y: {
-        beginAtZero: false,
+        ticks: {
+          callback: (value) => formatPrice(value as number),
+        },
       },
     },
   };

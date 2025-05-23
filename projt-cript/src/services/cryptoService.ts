@@ -10,6 +10,9 @@ interface CoinData {
   current_price: number;
   price_change_percentage_24h: number;
   market_cap: number;
+  total_volume?: number;
+  high_24h?: number;
+  low_24h?: number;
 }
 
 class CryptoService {
@@ -22,65 +25,104 @@ class CryptoService {
     return Date.now() - cachedData.timestamp < this.CACHE_DURATION;
   }
 
-  async getTopCoins(limit: number = 100): Promise<CoinData[]> {
-    const cacheKey = `top-coins-${limit}`;
+  async getTopCoins(limit: number = 50, currency: string = 'brl'): Promise<CoinData[]> {
+    const cacheKey = `topCoins-${limit}-${currency}`;
     
     if (this.isDataValid(cacheKey)) {
       return this.cache[cacheKey].data;
     }
 
     try {
-      const response = await axios.get(`${COINGECKO_API}/coins/markets`, {
+      const { data } = await axios.get(`${COINGECKO_API}/coins/markets`, {
         params: {
-          vs_currency: 'usd',
+          vs_currency: currency.toLowerCase(),
           order: 'market_cap_desc',
           per_page: limit,
-          sparkline: false,
-          locale: 'en',
-        },
+          page: 1,
+          sparkline: false
+        }
       });
 
       this.cache[cacheKey] = {
-        data: response.data,
+        data,
         timestamp: Date.now(),
       };
 
-      return response.data;
+      return data;
     } catch (error) {
-      console.error('Error fetching top coins:', error);
-      throw error;
+      console.error('Erro ao buscar dados da API:', error);
+      throw new Error('Falha ao carregar dados das criptomoedas');
     }
   }
 
-  async getCoinHistory(coinId: string, days: number = 7): Promise<{
-    prices: [number, number][];
-  }> {
-    const cacheKey = `coin-history-${coinId}-${days}`;
-
+  async getCoinHistory(id: string, days: number, currency: string = 'brl') {
+    const cacheKey = `history-${id}-${days}-${currency}`;
+    
     if (this.isDataValid(cacheKey)) {
       return this.cache[cacheKey].data;
     }
 
     try {
-      const response = await axios.get(
-        `${COINGECKO_API}/coins/${coinId}/market_chart`,
-        {
-          params: {
-            vs_currency: 'usd',
-            days: days,
-          },
+      const { data } = await axios.get(`${COINGECKO_API}/coins/${id}/market_chart`, {
+        params: {
+          vs_currency: currency.toLowerCase(),
+          days: days
         }
-      );
+      });
 
       this.cache[cacheKey] = {
-        data: response.data,
+        data,
         timestamp: Date.now(),
       };
 
-      return response.data;
+      return data;
     } catch (error) {
-      console.error('Error fetching coin history:', error);
-      throw error;
+      console.error('Erro ao buscar dados históricos:', error);
+      throw new Error('Falha ao carregar dados históricos');
+    }
+  }
+
+  async getCoinDetails(id: string, currency: string = 'brl'): Promise<CoinData> {
+    const cacheKey = `details-${id}-${currency}`;
+    
+    if (this.isDataValid(cacheKey)) {
+      return this.cache[cacheKey].data;
+    }
+
+    try {
+      const { data } = await axios.get(`${COINGECKO_API}/coins/${id}`, {
+        params: {
+          localization: false,
+          tickers: true,
+          market_data: true,
+          community_data: false,
+          developer_data: false,
+          sparkline: false
+        }
+      });
+
+      const formattedData: CoinData = {
+        id: data.id,
+        symbol: data.symbol,
+        name: data.name,
+        image: data.image.large,
+        current_price: data.market_data.current_price[currency.toLowerCase()],
+        price_change_percentage_24h: data.market_data.price_change_percentage_24h,
+        market_cap: data.market_data.market_cap[currency.toLowerCase()],
+        total_volume: data.market_data.total_volume[currency.toLowerCase()],
+        high_24h: data.market_data.high_24h[currency.toLowerCase()],
+        low_24h: data.market_data.low_24h[currency.toLowerCase()]
+      };
+
+      this.cache[cacheKey] = {
+        data: formattedData,
+        timestamp: Date.now(),
+      };
+
+      return formattedData;
+    } catch (error) {
+      console.error('Erro ao buscar detalhes da moeda:', error);
+      throw new Error('Falha ao carregar detalhes da moeda');
     }
   }
 }

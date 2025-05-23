@@ -9,7 +9,7 @@ export const Header = () => {
     <header className="fixed top-0 w-full bg-white dark:bg-gray-900 shadow-md z-50">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         <Link href="/" className="text-2xl font-bold text-blue-600 dark:text-blue-400">
-          CriptoBoard
+          CriptoBoard 
         </Link>
         
         <div className="flex items-center gap-4">

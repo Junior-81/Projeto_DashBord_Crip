@@ -1,41 +1,58 @@
-interface FilterBarProps {
-  sortBy: string;
-  onSortChange: (value: string) => void;
-  showFavorites: boolean;
-  onToggleFavorites: () => void;
-}
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { CurrencySelect } from "./CurrencySelect"
+import { FilterBarProps } from "@/types"
 
 export const FilterBar = ({
+  searchTerm,
+  onSearchChange,
   sortBy,
   onSortChange,
   showFavorites,
   onToggleFavorites,
+  currency,
+  onCurrencyChange,
 }: FilterBarProps) => {
   return (
-    <div className="flex items-center gap-4">
-      <select
-        value={sortBy}
-        onChange={(e) => onSortChange(e.target.value)}
-        className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      >
-        <option value="market_cap_desc">Market Cap (Maior)</option>
-        <option value="market_cap_asc">Market Cap (Menor)</option>
-        <option value="price_desc">Preço (Maior)</option>
-        <option value="price_asc">Preço (Menor)</option>
-        <option value="change_desc">Variação 24h (Maior)</option>
-        <option value="change_asc">Variação 24h (Menor)</option>
-      </select>
-
-      <button
+    <div className="flex flex-col sm:flex-row gap-2 items-center justify-between mb-4">
+      <div className="flex flex-col sm:flex-row gap-2 flex-1">
+        <Input
+          type="text"
+          placeholder="Buscar criptomoeda..."
+          value={searchTerm}
+          onChange={(e) => onSearchChange(e.target.value)}
+          className="w-full sm:w-64"
+        />
+        <CurrencySelect
+          currency={currency}
+          onCurrencyChange={onCurrencyChange}
+        />
+        <Select value={sortBy} onValueChange={onSortChange}>
+          <SelectTrigger className="w-full sm:w-48">
+            <SelectValue placeholder="Ordenar por" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="market_cap_desc">Market Cap (Maior)</SelectItem>
+            <SelectItem value="market_cap_asc">Market Cap (Menor)</SelectItem>
+            <SelectItem value="price_desc">Preço (Maior)</SelectItem>
+            <SelectItem value="price_asc">Preço (Menor)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+      <Button
+        variant={showFavorites ? "secondary" : "outline"}
         onClick={onToggleFavorites}
-        className={`px-4 py-2 rounded-lg transition-colors ${
-          showFavorites
-            ? 'bg-yellow-500 text-white hover:bg-yellow-600'
-            : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'
-        }`}
+        className="w-full sm:w-auto"
       >
-        {showFavorites ? 'Mostrar Todos' : 'Mostrar Favoritos'}
-      </button>
+        Mostrar Favoritos
+      </Button>
     </div>
-  );
-};
+  )
+}

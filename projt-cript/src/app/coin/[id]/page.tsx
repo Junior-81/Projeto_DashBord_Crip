@@ -1,9 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { PriceChart } from '@/components/PriceChart';
 import { cryptoService } from '@/services/cryptoService';
+import { CurrencySelect } from '@/components/CurrencySelect';
+import { Header } from '@/components/Header';
 
 interface CoinDetails {
   name: string;
@@ -18,29 +20,48 @@ interface CoinDetails {
 
 export default function CoinDetailsPage() {
   const { id } = useParams();
+  const searchParams = useSearchParams();
+  const [currency, setCurrency] = useState(searchParams.get('currency') || 'BRL');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [coinData, setCoinData] = useState<CoinDetails | null>(null);
   const [priceData, setPriceData] = useState<{
     prices: [number, number][];
   } | null>(null);
-  const [timeRange, setTimeRange] = useState(7); // 7 dias por padrão
+  const [timeRange, setTimeRange] = useState(7);
 
   useEffect(() => {
-    loadPriceData();
-  }, [id, timeRange]);
+    loadData();
+  }, [id, currency, timeRange]);
 
-  const loadPriceData = async () => {
+  const loadData = async () => {
     try {
       if (!id) return;
-      const data = await cryptoService.getCoinHistory(id as string, timeRange);
-      setPriceData(data);
+      setLoading(true);
+      
+      const [historyData, details] = await Promise.all([
+        cryptoService.getCoinHistory(id as string, timeRange, currency),
+        cryptoService.getCoinDetails(id as string, currency)
+      ]);
+      
+      setPriceData(historyData);
+      setCoinData(details);
       setError(null);
     } catch (err) {
-      setError('Erro ao carregar dados históricos');
+      setError('Erro ao carregar dados');
       console.error(err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(price);
   };
 
   if (loading) {
@@ -51,12 +72,12 @@ export default function CoinDetailsPage() {
     );
   }
 
-  if (error || !priceData) {
+  if (error) {
     return (
       <div className="text-center text-red-500 mt-8">
-        <p>{error || 'Erro ao carregar dados'}</p>
+        <p>{error}</p>
         <button
-          onClick={loadPriceData}
+          onClick={loadData}
           className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
         >
           Tentar novamente
@@ -65,52 +86,74 @@ export default function CoinDetailsPage() {
     );
   }
 
-  const labels = priceData.prices.map(([timestamp]) =>
-    new Date(timestamp).toLocaleDateString('pt-BR')
-  );
-  const prices = priceData.prices.map(([, price]) => price);
-
   return (
-    <div className="py-8">
-      <div className="mb-8">
-        <div className="flex gap-4 mb-6">
-          <button
-            onClick={() => setTimeRange(7)}
-            className={`px-4 py-2 rounded ${
-              timeRange === 7
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
-            }`}
-          >
-            7D
-          </button>
-          <button
-            onClick={() => setTimeRange(30)}
-            className={`px-4 py-2 rounded ${
-              timeRange === 30
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
-            }`}
-          >
-            30D
-          </button>
-          <button
-            onClick={() => setTimeRange(90)}
-            className={`px-4 py-2 rounded ${
-              timeRange === 90
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-200 dark:bg-gray-700'
-            }`}
-          >
-            90D
-          </button>
+    <div className="container mx-auto px-4 py-8">
+      <Header />
+      <div className="mt-16">
+        <div className="flex justify-between items-center mb-8">
+          <div className="flex items-center gap-4">
+            {coinData && (
+              <>
+                <h1 className="text-2xl font-bold">{coinData.name}</h1>
+                <span className="text-gray-500">({coinData.symbol.toUpperCase()})</span>
+              </>
+            )}
+          </div>
+          <CurrencySelect
+            currency={currency}
+            onCurrencyChange={(value) => {
+              setCurrency(value);
+              // Atualiza a URL com a nova moeda sem recarregar a página
+              const url = new URL(window.location.href);
+              url.searchParams.set('currency', value);
+              window.history.pushState({}, '', url);
+            }}
+          />
         </div>
-        
-        <PriceChart
-          data={prices}
-          labels={labels}
-          title={`Histórico de Preços - ${timeRange} dias`}
-        />
+
+        {coinData && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+              <h2 className="text-xl font-bold mb-4">Preço Atual</h2>
+              <p className="text-3xl font-bold">{formatPrice(coinData.current_price)}</p>
+              <p className={`text-sm ${coinData.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                {coinData.price_change_percentage_24h > 0 ? '+' : ''}
+                {coinData.price_change_percentage_24h.toFixed(2)}%
+              </p>
+            </div>
+            
+            <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+              <h2 className="text-xl font-bold mb-4">Informações de Mercado</h2>
+              <div className="space-y-2">
+                <p>Market Cap: {formatPrice(coinData.market_cap)}</p>
+                <p>Volume 24h: {formatPrice(coinData.total_volume)}</p>
+                <p>Máxima 24h: {formatPrice(coinData.high_24h)}</p>
+                <p>Mínima 24h: {formatPrice(coinData.low_24h)}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {priceData && (
+          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">Histórico de Preços</h2>
+              <select
+                value={timeRange}
+                onChange={(e) => setTimeRange(Number(e.target.value))}
+                className="p-2 border rounded dark:bg-gray-700"
+              >
+                <option value={1}>24 horas</option>
+                <option value={7}>7 dias</option>
+                <option value={30}>30 dias</option>
+                <option value={90}>90 dias</option>
+                <option value={365}>1 ano</option>
+              </select>
+            </div>
+            <PriceChart data={priceData.prices} currency={currency} />
+          </div>
+        )}
       </div>
     </div>
-  );}
+  );
+}

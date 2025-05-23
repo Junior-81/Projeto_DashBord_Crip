@@ -10,15 +10,24 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
+    "@radix-ui/react-select": "^2.2.5",
+    "@radix-ui/react-slot": "^1.2.3",
     "axios": "^1.6.7",
     "chart.js": "^4.4.1",
-    "next": "14.1.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.12.1",
+    "lucide-react": "^0.511.0",
+    "next": "14.1.4",
     "projt-cript": "file:",
     "react": "18.2.0",
     "react-chartjs-2": "^5.2.0",
-    "react-dom": "18.2.0"
+    "react-dom": "18.2.0",
+    "tailwind-merge": "^3.3.0",
+    "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
+    "@shadcn/ui": "^0.0.4",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.52",
     "@types/react-dom": "^18.2.18",
