@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "vercel-build": "next build && echo 'Build concluído com sucesso!'",
-    "postinstall": "echo 'Instalação concluída com sucesso!'"
+    "postinstall": "echo 'Instalação concluída com sucesso!'",
+    "postbuild": "node -e \"const fs=require('fs-extra'); const path=require('path'); try { const publicDir=path.join(process.cwd(),'public'); const nextStandalone=path.join(process.cwd(),'.next','standalone','public'); const nextStatic=path.join(process.cwd(),'.next','static','public'); fs.ensureDirSync(nextStandalone); fs.ensureDirSync(nextStatic); fs.copySync(publicDir, nextStandalone); fs.copySync(publicDir, nextStatic); console.log('Arquivos públicos copiados com sucesso!'); } catch(err) { console.error(err); }\""
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
@@ -37,6 +38,7 @@
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "eslint-config-next": "14.1.0",
+    "fs-extra": "^11.3.0",
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"

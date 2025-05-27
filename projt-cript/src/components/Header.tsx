@@ -7,8 +7,9 @@ import LogoIcon from './LogoIcon';
 export const Header = () => {
   const { theme, toggleTheme } = useTheme();
 
-  return (    <header className="fixed top-0 w-full bg-gradient-to-r from-white/90 to-blue-50/90 dark:from-gray-900/95 dark:to-blue-950/95 backdrop-blur-md shadow-lg z-50 border-b border-blue-100 dark:border-blue-900 transition-all duration-300">
-      <div className="max-w-7xl  px-4 sm:px-6 lg:px-8 py-3">
+  return (
+    <header className="fixed top-0 w-full bg-gradient-to-r from-white/90 to-blue-50/90 dark:from-gray-900/95 dark:to-blue-950/95 backdrop-blur-md shadow-lg z-50 border-b border-blue-100 dark:border-blue-900 transition-all duration-300">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
         <div className="flex justify-between items-center">
           {/* Logo e nome - Com animação e efeitos */}
           <Link href="/" className="flex items-center space-x-3 group relative">
@@ -39,16 +40,14 @@ export const Header = () => {
             <div className="relative w-6 h-6 overflow-hidden">
               {theme === 'dark' ? (
                 <>
-                  <SunIcon className="h-6 w-6 text-amber-400 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
-                  <span className="absolute -bottom-6 left-0 right-0 text-[10px] text-center text-amber-400 opacity-0 group-hover:opacity-100 group-hover:-translate-y-5 transition-all duration-300">
-
+                  <SunIcon className="h-6 w-6 text-amber-400 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />                  <span className="absolute -bottom-6 left-0 right-0 text-[10px] text-center text-amber-400 opacity-0 group-hover:opacity-100 group-hover:-translate-y-5 transition-all duration-300">
+                    Claro
                   </span>
                 </>
               ) : (
                 <>
-                  <MoonIcon className="h-6 w-6 text-blue-600 dark:text-blue-400 transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300" />
-                  <span className="absolute -bottom-6 left-0 right-0 text-[10px] text-center text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 group-hover:-translate-y-5 transition-all duration-300">
-                  
+                  <MoonIcon className="h-6 w-6 text-blue-600 dark:text-blue-400 transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300" />                  <span className="absolute -bottom-6 left-0 right-0 text-[10px] text-center text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 group-hover:-translate-y-5 transition-all duration-300">
+                    Escuro
                   </span>
                 </>
               )}

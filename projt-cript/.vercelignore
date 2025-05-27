@@ -2,6 +2,16 @@
 node_modules
 .next
 .git
+.github
+.vscode
+
+# Cache e diretórios temporários
+.cache
+.tmp
+.temp
+dist
+out
+build
 
 # Arquivos de log
 *.log
