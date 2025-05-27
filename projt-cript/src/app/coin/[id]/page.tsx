@@ -135,7 +135,7 @@ export default function CoinDetailsPage() {
         )}
 
         {priceData && (
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold">Histórico de Preços</h2>
               <select
@@ -147,7 +147,6 @@ export default function CoinDetailsPage() {
                 <option value={7}>7 dias</option>
                 <option value={30}>30 dias</option>
                 <option value={90}>90 dias</option>
-                <option value={365}>1 ano</option>
               </select>
             </div>
             <PriceChart data={priceData.prices} currency={currency} />

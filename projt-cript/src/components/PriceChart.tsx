@@ -56,6 +56,7 @@ export const PriceChart = ({ data, currency }: PriceChartProps) => {
 
   const options: ChartOptions<'line'> = {
     responsive: true,
+    maintainAspectRatio: false, 
     plugins: {
       legend: {
         display: false,
@@ -83,7 +84,7 @@ export const PriceChart = ({ data, currency }: PriceChartProps) => {
   };
 
   return (
-    <div className="w-full h-[400px] bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md">
+    <div className="w-full h-[500px] bg-white dark:bg-gray-800 p-4 rounded-xl shadow-md"> 
       <Line data={chartData} options={options} />
     </div>
   );
