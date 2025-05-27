@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "vercel-build": "next build && echo 'Build concluído com sucesso!'",
+    "postinstall": "echo 'Instalação concluída com sucesso!'"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
@@ -28,6 +30,7 @@
   },
   "devDependencies": {
     "@shadcn/ui": "^0.0.4",
+    "@svgr/webpack": "^8.1.0",
     "@types/node": "^20.11.16",
     "@types/react": "^18.2.52",
     "@types/react-dom": "^18.2.18",

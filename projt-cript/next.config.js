@@ -2,11 +2,18 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
-  output: 'standalone', // Otimiza para deploy na Vercel
   images: {
-    domains: [], // Adicione domínios externos de imagens se necessário
-    unoptimized: true // Ajuda com problemas de imagens estáticas
-  }
+    unoptimized: true,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.svg$/,
+      use: ['@svgr/webpack'],
+    });
+    return config;
+  },
 };
 
 module.exports = nextConfig;

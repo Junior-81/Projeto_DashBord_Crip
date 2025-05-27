@@ -13,9 +13,9 @@ interface CoinDetails {
   current_price: number;
   price_change_percentage_24h: number;
   market_cap: number;
-  total_volume: number;
-  high_24h: number;
-  low_24h: number;
+  total_volume?: number;
+  high_24h?: number;
+  low_24h?: number;
 }
 
 export default function CoinDetailsPage() {
@@ -124,11 +124,10 @@ export default function CoinDetailsPage() {
             
             <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
               <h2 className="text-xl font-bold mb-4">Informações de Mercado</h2>
-              <div className="space-y-2">
-                <p>Market Cap: {formatPrice(coinData.market_cap)}</p>
-                <p>Volume 24h: {formatPrice(coinData.total_volume)}</p>
-                <p>Máxima 24h: {formatPrice(coinData.high_24h)}</p>
-                <p>Mínima 24h: {formatPrice(coinData.low_24h)}</p>
+              <div className="space-y-2">                <p>Market Cap: {formatPrice(coinData.market_cap)}</p>
+                <p>Volume 24h: {coinData.total_volume ? formatPrice(coinData.total_volume) : 'N/A'}</p>
+                <p>Máxima 24h: {coinData.high_24h ? formatPrice(coinData.high_24h) : 'N/A'}</p>
+                <p>Mínima 24h: {coinData.low_24h ? formatPrice(coinData.low_24h) : 'N/A'}</p>
               </div>
             </div>
           </div>
