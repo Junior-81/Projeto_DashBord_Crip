@@ -14,11 +14,12 @@ export const Header = () => {
           <Link href="/" className="flex items-center space-x-3 group">
             <div className="relative overflow-hidden rounded-lg p-1 bg-gradient-to-br from-blue-500/10 to-purple-600/10 dark:from-blue-500/20 dark:to-purple-600/20 shadow-sm">
               <Image
-                src="/crypto-logo.svg"
+                src={theme === 'dark' ? '/crypto-logo.svg' : '/crypto-logo.svg'}
                 alt="CryptoBoard Logo"
                 width={36}
                 height={36}
-                className="dark:invert-0 transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+                className="transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-purple-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
             </div>
