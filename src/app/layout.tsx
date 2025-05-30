@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import "./globals.css";
+import { Header } from "@/components/Header";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,7 +23,8 @@ export default function RootLayout({
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${inter.variable} antialiased bg-background text-foreground`}>
         <ThemeProvider>
-          <main className="pt-28">
+          <Header />
+          <main className="pt-20">
             {children}
           </main>
         </ThemeProvider>

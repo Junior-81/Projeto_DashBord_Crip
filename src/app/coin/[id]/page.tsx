@@ -5,7 +5,6 @@ import { useParams, useSearchParams } from 'next/navigation';
 import { PriceChart } from '@/components/PriceChart';
 import { cryptoService } from '@/services/cryptoService';
 import { CurrencySelect } from '@/components/CurrencySelect';
-import { Header } from '@/components/Header';
 
 interface CoinDetails {
   name: string;
@@ -85,11 +84,9 @@ export default function CoinDetailsPage() {
       </div>
     );
   }
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <Header />
-      <div className="mt-16">
+      <div className="mt-4">
         <div className="flex justify-between items-center mb-8">
           <div className="flex items-center gap-4">
             {coinData && (

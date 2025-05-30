@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { CryptoCard } from '@/components/CryptoCard';
 import { cryptoService } from '@/services/cryptoService';
 import { useFavorites } from '@/hooks/useFavorites';
-import { Header } from '@/components/Header';
 import { FilterBar } from '@/components/FilterBar';
 import { PopupCurrencyConverter } from '@/components/PopupCurrencyConverter';
 
@@ -91,8 +90,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto px-3 sm:px-4 py-4">
-      <Header />
-      <div className="mt-16"> {/* Espaço ajustado para o cabeçalho fixo */}
+      <div className="mt-4"> {/* Espaço ajustado para o cabeçalho fixo */}
         {/* Banner informativo principal */}
         <div className="mb-5 p-4 rounded-xl bg-gradient-to-br from-blue-50/30 to-purple-50/30 dark:from-blue-900/20 dark:to-purple-900/20 shadow-md border border-blue-100/30 dark:border-blue-900/30 transition-all duration-300">
           <h2 className="text-2xl font-bold mb-2 text-center text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700">
