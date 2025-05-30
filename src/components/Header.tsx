@@ -42,14 +42,14 @@ export const Header = () => {
                 <>
                   <SunIcon className="h-6 w-6 text-amber-400 transform group-hover:scale-110 group-hover:rotate-12 transition-all duration-300" />
                   <span className="absolute -bottom-6 left-0 right-0 text-[10px] text-center text-amber-400 opacity-0 group-hover:opacity-100 group-hover:-translate-y-5 transition-all duration-300">
-                    Claro
+                   
                   </span>
                 </>
               ) : (
                 <>
                   <MoonIcon className="h-6 w-6 text-blue-600 dark:text-blue-400 transform group-hover:scale-110 group-hover:-rotate-12 transition-all duration-300" />
                   <span className="absolute -bottom-6 left-0 right-0 text-[10px] text-center text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 group-hover:-translate-y-5 transition-all duration-300">
-                    Escuro
+                   
                   </span>
                 </>
               )}

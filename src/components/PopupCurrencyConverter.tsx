@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CurrencyConverter } from './CurrencyConverter';
+import { CurrencyConverter } from '@/components/CurrencyConverter';
 import { Button } from './ui/button';
 import { 
   Dialog, 
@@ -13,7 +13,9 @@ import {
 import { Calculator } from 'lucide-react';
 
 export const PopupCurrencyConverter = () => {
-  const [isOpen, setIsOpen] = useState(false);  return (
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button 
@@ -22,7 +24,6 @@ export const PopupCurrencyConverter = () => {
         >
           <div className="flex flex-col items-center justify-center relative overflow-hidden">
             <Calculator className="h-6 w-6 animate-pulse-slow" />
-            <span className="text-[10px] mt-1 font-medium">Converter</span>
             <span className="absolute -z-10 w-24 h-24 bg-white/20 rounded-full blur-2xl animate-pulse"></span>
           </div>
         </Button>
