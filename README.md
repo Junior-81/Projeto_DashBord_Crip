@@ -77,16 +77,4 @@ A aplicação foi desenvolvida com um design totalmente responsivo, proporcionan
 - **Layout Mobile:** Interface otimizada para dispositivos móveis
 
 
-## 🔮 Melhorias Futuras
 
-- Implementação de autenticação de usuários
-- Notificações personalizadas de preços
-- Integração com carteiras de criptomoedas
-- Análises de tendências avançadas
-- Suporte para mais moedas fiduciárias
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
